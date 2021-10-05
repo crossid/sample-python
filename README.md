@@ -1,5 +1,13 @@
 # Readme
 
+First run to install dependancies
+
+```bash
+pip install -r requirements.txt
+```
+
+Then you can run the server with
+
 ```bash
 CLIENT_ID=<client_id>\
 CLIENT_SECRET=<client_secret> \
