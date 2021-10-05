@@ -41,13 +41,17 @@ class Handler(http.server.SimpleHTTPRequestHandler):
           self.send_response(HTTPStatus.NOT_FOUND)
           self.end_headers()
 
+    def set_cookies(self, cookies):
+      for _, value in cookies.items():
+        self.send_header('Set-Cookie', value.output(None,''))
+
     def get_cookies(self):
         cookie = http.cookies.SimpleCookie()
         cookies = {}
         if self.headers.get('Cookie') != None:
           cookie.load(self.headers.get('Cookie'))
-          for n, c in cookie.items():
-            cookies[n] = f.decrypt(b64decode(c.value)).decode()
+          for n, c in cookie.items():            
+            cookies[n] = f.decrypt(c.value.encode()).decode()
 
         return cookies
 
@@ -62,18 +66,18 @@ class Handler(http.server.SimpleHTTPRequestHandler):
         state = b64encode(os.urandom(32))
 
         cookie = http.cookies.SimpleCookie()
-        cookie['nonce'] = b64encode(f.encrypt(nonce)).decode()
-        cookie['nonce'].secure = True
-        cookie['nonce'].httponly = True
+        cookie['nonce'] = f.encrypt(nonce).decode()
+        cookie['nonce']['secure'] = True
+        cookie['nonce']['httponly'] = True
 
-        cookie['state'] = b64encode(f.encrypt(state)).decode()
-        cookie['state'].secure = True
-        cookie['state'].httponly = True
+        cookie['state'] = f.encrypt(state).decode()
+        cookie['state']['secure'] = True
+        cookie['state']['httponly'] = True
 
         auth_url = client.auth_url(state, scope=["openid", "profile", "email"], nonce = nonce)
 
         self.send_response(HTTPStatus.FOUND)
-        self.send_header('Set-Cookie', cookie.output(header='', sep=''))
+        self.set_cookies(cookie)
         self.send_header('Location',auth_url)
         self.end_headers()
 
