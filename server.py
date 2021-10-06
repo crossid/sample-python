@@ -93,7 +93,7 @@ class Handler(http.server.SimpleHTTPRequestHandler):
       
       state = query.get('state', [''])[0]
       saved_state = cookies['state']
-      if state != saved_state:
+      if saved_state == '' or state != saved_state:
         self.send_response(HTTPStatus.BAD_REQUEST)
         self.send_header( 'Content-type', 'text/html' )
         self.end_headers()
@@ -108,8 +108,13 @@ class Handler(http.server.SimpleHTTPRequestHandler):
 
       logout_url = client.end_session_endpoint + "?id_token_hint=" +  tokens.id_token + "&post_logout_redirect_uri=https://localhost"
 
+      cookie = http.cookies.SimpleCookie()
+      cookie['state'] = ''
+      cookie['state']['max-age'] = -1
+
       self.send_response(HTTPStatus.OK)
       self.send_header( 'Content-type', 'text/html' )
+      self.send_header('Set-Cookie', cookie.output(None,''))
       self.end_headers()
       self.wfile.write('<html><body>Hello {}.<br/>Your access token is {}<br/><button><a href="{}">Logout</a></button></body></html>'
                       .format(id_token['name'], tokens.access_token, logout_url).encode())
