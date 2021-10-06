@@ -109,12 +109,13 @@ class Handler(http.server.SimpleHTTPRequestHandler):
       logout_url = client.end_session_endpoint + "?id_token_hint=" +  tokens.id_token + "&post_logout_redirect_uri=https://localhost"
 
       cookie = http.cookies.SimpleCookie()
-      cookie['state'] = ''
-      cookie['state']['max-age'] = -1
+      cookie['nonce'] = f.encrypt(saved_nonce.encode()).decode()
+      cookie['nonce']['secure'] = True
+      cookie['nonce']['httponly'] = True
 
       self.send_response(HTTPStatus.OK)
       self.send_header( 'Content-type', 'text/html' )
-      self.send_header('Set-Cookie', cookie.output(None,''))
+      self.set_cookies(cookie)
       self.end_headers()
       self.wfile.write('<html><body>Hello {}.<br/>Your access token is {}<br/><button><a href="{}">Logout</a></button></body></html>'
                       .format(id_token['name'], tokens.access_token, logout_url).encode())
