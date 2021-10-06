@@ -1,6 +1,5 @@
 import os
-from base64 import b64encode, b64decode
-import json
+from base64 import b64encode
 
 import http.server
 import http.cookies
