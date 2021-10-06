@@ -150,7 +150,7 @@ class Handler(http.server.SimpleHTTPRequestHandler):
           self.send_response(HTTPStatus.UNAUTHORIZED)
           self.send_header( 'Content-type', 'text/html' )
           self.end_headers()
-          self.wfile.write(e)
+          self.wfile.write(str(e).encode())
           return
       
       self.send_response(HTTPStatus.OK)
