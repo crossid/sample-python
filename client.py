@@ -52,12 +52,12 @@ class OIDCClient:
 
   def exchange_token(self, code: str) -> Token:
     tokenJ = requests.post(self.token_endpoint, data={
-      'client_id': self.client_id,
-      'client_secret': self.client_secret,
-      'redirect_uri': self.redirect_uri,
-      'code': code,
-      'grant_type': 'authorization_code'
-    }).json()
+        'client_id': self.client_id,
+        'client_secret': self.client_secret,
+        'redirect_uri': self.redirect_uri,
+        'code': code,
+        'grant_type': 'authorization_code'
+      }).json()
 
     token = Token(access_token=tokenJ.get('access_token', ''), 
                   id_token=tokenJ.get('id_token', ''), 
@@ -68,6 +68,25 @@ class OIDCClient:
                 )
 
     return token
+  
+  def refresh_token(self, refresh_token: str) -> Token:
+    tokenJ = requests.post(self.token_endpoint, data={
+        'client_id': self.client_id,
+        'client_secret': self.client_secret,
+        'refresh_token': refresh_token,
+        'grant_type': 'refresh_token'
+      }).json()
+
+    token = Token(access_token=tokenJ.get('access_token', ''), 
+                  id_token=tokenJ.get('id_token', ''), 
+                  refresh_token=tokenJ.get('refresh_token', ''), 
+                  token_type=tokenJ['token_type'], 
+                  expires_in=tokenJ['expires_in'],
+                  scope=tokenJ['scope'].split(' ')
+            )
+
+    return token
+
          
   def decode(self, token: str, nonce: str = '', audience: str = '') -> Dict[str, any]:  
     signing_key = self.jwks_client.get_signing_key_from_jwt(token)
