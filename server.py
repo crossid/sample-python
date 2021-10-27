@@ -118,7 +118,7 @@ class Handler(http.server.SimpleHTTPRequestHandler):
       self.send_header( 'Content-type', 'text/html' )
       self.set_cookies(cookie)
       self.end_headers()
-      self.wfile.write('<html><body>Hello {}.<br/>Your access token is {}<br/><button><a href="{}">Logout</a></button></body></html>'
+      self.wfile.write('<html><body>Hello {}.<br/><br/>Your access token is: {}<br/><br/>Try to consume  protected resource by:<br /><br /><code>export TOKEN=token...<br />curl -H "Authorization: Bearer $TOKEN" public_url/protected</code><br/><br/><button><a href="{}">Logout</a></button></body></html>'
                       .format(id_token['name'], tokens.access_token, logout_url).encode())
 
     def has_any_scopes(self, token, scopes) -> bool:
