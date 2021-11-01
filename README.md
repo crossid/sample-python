@@ -5,7 +5,7 @@ A vanilla python project that demonstrates how to perform authentication and aut
 ## Prerequisites
 
 - Have a Crossid tenant, or [sign up](https://crossid.io/signup) for free.
-- [Create a web application](https://developer.crossid.io/docs/guides/howto/create-web-app)
+- [Add a web application](https://developer.crossid.io/docs/guides/howto/add-web-app)
 
 ## Running locally
 
