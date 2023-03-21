@@ -10,7 +10,9 @@ from urllib.parse import parse_qs
 from cryptography.fernet import Fernet
 
 from client import OIDCClient
+from dotenv import load_dotenv
 
+load_dotenv()
 
 
 secret = Fernet.generate_key()
@@ -49,8 +51,11 @@ class Handler(http.server.SimpleHTTPRequestHandler):
         cookies = {}
         if self.headers.get('Cookie') != None:
           cookie.load(self.headers.get('Cookie'))
-          for n, c in cookie.items():            
-            cookies[n] = f.decrypt(c.value.encode()).decode()
+          for n, c in cookie.items():          
+            if n in ["nonce", "state"]:
+              cookies[n] = f.decrypt(c.value.encode()).decode()
+            else:
+              cookies[n] = c
 
         return cookies
 
@@ -119,7 +124,7 @@ class Handler(http.server.SimpleHTTPRequestHandler):
       self.set_cookies(cookie)
       self.end_headers()
       self.wfile.write('<html><body>Hello {}.<br/><br/>Your access token is: {}<br/><br/>Try to consume  protected resource by:<br /><br /><code>export TOKEN=token...<br />curl -H "Authorization: Bearer $TOKEN" public_url/protected</code><br/><br/><button><a href="{}">Logout</a></button></body></html>'
-                      .format(id_token['name'], tokens.access_token, logout_url).encode())
+                      .format(id_token['email'], tokens.access_token, logout_url).encode())
 
     def has_any_scopes(self, token, scopes) -> bool:
       return len(set(token.get('scp', [])).intersection(scopes)) > 0
