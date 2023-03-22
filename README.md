@@ -23,7 +23,7 @@ Then you can run the server with
 CLIENT_ID=<client_id>\
 CLIENT_SECRET=<client_secret> \
 REDIRECT_URI=https://localhost/callback \
-ISSUER_BASE_URL=https://<tenant_id>.crossid.io/oauth2/ \
+ISSUER_BASE_URL=https://<tenant_id>.<region>.crossid.io/oauth2/ \
 python server.py
 ```
 
